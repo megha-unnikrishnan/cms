@@ -98,6 +98,7 @@ WSGI_APPLICATION = 'cmsproject.wsgi.application'
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Database
