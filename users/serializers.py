@@ -83,7 +83,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)  # Make it read-only
-
+    likes_count = serializers.IntegerField(read_only=True)
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at', 'likes_count', 'read_count', 'image']
@@ -98,4 +98,4 @@ class CommentSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ['id', 'post', 'user']
+        fields = ['post', 'user']

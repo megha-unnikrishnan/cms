@@ -102,13 +102,16 @@ def login_view(request):
             if response.status_code == 200:  # Successful login
                
                 token_data = response.json()
+                print("Token Data:", token_data) 
                 access_token = token_data.get("access")
                 is_admin = token_data.get("is_admin")  
+                email = token_data.get("email")  # Get the user's email
                 print('acces',access_token)
                 
                 
                 request.session['access_token'] = access_token  
                 request.session['is_admin'] = is_admin
+                request.session['email'] = email
                 if is_admin:
                     return redirect("admin_dashboard_view") 
                 else:
@@ -138,8 +141,9 @@ def logout_view(request):
 
 @login_required
 def user_dashboard_view(request):
-    user=request.user
-    return render(request, 'usersview/user_dashboard.html',{'user':user})
+    email = request.session.get('email', None)
+    print("User email retrieved from session:", email)
+    return render(request, 'usersview/demo.html',{'full_name': email})
 
 
 
@@ -374,40 +378,6 @@ def deletepost(request, pk):
 
 
 
-
-
-# Like a Post
-class PostLikeView(generics.CreateAPIView):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-
-    def create(self, request, *args, **kwargs):
-        post_id = self.kwargs.get('pk')
-        post = Post.objects.get(id=post_id)
-        user = request.user
-        
-        # Ensure a user can like a post only once
-        if Like.objects.filter(post=post, user=user).exists():
-            return Response({"detail": "You have already liked this post"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Create like
-        like = Like.objects.create(post=post, user=user)
-        post.likes_count += 1
-        post.save()
-        return Response(self.get_serializer(like).data, status=status.HTTP_201_CREATED)
-
-# Unlike a Post
-class PostUnlikeView(generics.DestroyAPIView):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-
-    def perform_destroy(self, instance):
-        instance.post.likes_count -= 1
-        instance.post.save()
-        super().perform_destroy(instance)
-
-# Get Comments for a Post
-
 class PostCommentListView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -608,3 +578,53 @@ def comments(request, pk):
     except requests.exceptions.RequestException as e:
         print("API request failed:", e)
         return render(request, "usersview/demo.html", {"errors": {"non_field_errors": ["Something went wrong."]}, "post_id": pk})
+    
+
+
+
+
+class LikePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        user = request.user
+        post = Post.objects.get(id=post_id)
+        like, created = Like.objects.get_or_create(post=post, user=user)
+        if not created:  # If the like already exists, delete it (unlike)
+            like.delete()
+            return Response({"message": "Unliked", "liked": False, "likes_count": post.likes.count()})
+        
+        return Response({"message": "Liked", "liked": True, "likes_count": post.likes.count()})
+
+
+@login_required
+def dashboard(request):
+    # You can access the logged-in user with request.user
+    return render(request, 'usersview/demo.html', {'user': request.user})
+
+
+def like_post(request, pk):
+    api_url = f"http://localhost:8000/posts/{pk}/likes/"
+    access_token = request.session.get('access_token')
+
+    if not access_token:
+        return redirect('login')
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    # Fetch post details
+    post_details_url = f"http://localhost:8000/api/posts/{pk}/"
+    response = requests.get(post_details_url, headers=headers)
+    if response.status_code != 200:
+        return JsonResponse({"error": "Unable to fetch post details"}, status=response.status_code)
+
+    post_data = response.json()
+
+    if request.method == 'POST':
+        response = requests.post(api_url, headers=headers)
+        if response.status_code in [200, 201]:
+            like_data = response.json()
+            post_data['liked'] = like_data['liked']
+            post_data['likes_count'] = like_data['likes_count']
+
+    return render(request, 'usersview/post_detail.html', {'post': post_data})

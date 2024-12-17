@@ -84,4 +84,10 @@ class Like(models.Model):
         unique_together = ['post', 'user']
 
     def __str__(self):
-        return f"Like from {self.user.username} on {self.post.title}"
+        return f"Like from {self.user.full_name} on {self.post.title}"
+    
+    @property
+    def likes_count(self):
+        return self.post.likes.count()
+
+   

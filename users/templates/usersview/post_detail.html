@@ -5,77 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleLike(button) {
+            if (button.innerText === "Like") {
+                button.innerText = "Unlike";
+                button.classList.remove("bg-blue-600", "hover:bg-blue-700");
+                button.classList.add("bg-red-600", "hover:bg-red-700");
+            } else {
+                button.innerText = "Like";
+                button.classList.remove("bg-red-600", "hover:bg-red-700");
+                button.classList.add("bg-blue-600", "hover:bg-blue-700");
+            }
+        }
+
+        // Toggle dropdown visibility
+        function toggleMenu(menu) {
+            menu.classList.toggle("hidden");
+        }
+    </script>
 </head>
-<body class="bg-gray-100 p-4 flex justify-center">
+<body class="bg-gray-100 p-6 flex justify-center">
 
     <!-- Post Details Container -->
-    <div class="bg-white shadow-lg rounded-lg border border-gray-200 w-full max-w-md p-4">
-        <!-- Author Information -->
-        <div class="flex items-center mb-4">
-            {% if post.author.profile_picture %}
-                <img src="{{ post.author.profile_picture }}" alt="Author Profile Picture" class="w-10 h-10 rounded-full mr-3">
-            {% else %}
-                <div class="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
-            {% endif %}
-            <div>
-                <h4 class="text-sm font-medium text-gray-800">{{ post.author.full_name }}</h4>
-                <!-- <p class="text-xs text-gray-500">Posted on {{ post.created_at }}</p> -->
+    <div class="bg-white shadow-lg rounded-lg border border-gray-200 w-full max-w-2xl p-6 relative">
+        <!-- Author and Menu -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+                {% if post.author.profile_picture %}
+                    <img src="{{ post.author.profile_picture }}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-3">
+                {% else %}
+                    <div class="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
+                {% endif %}
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800">{{ post.author.full_name }}</h4>
+                    <p class="text-sm text-gray-500">{{ post.created_at }}</p>
+                </div>
             </div>
 
-            <!-- Three Dots (Edit/Delete) Menu -->
-            <div class="relative ml-auto group">
-                <button class="text-gray-600 hover:text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h12M6 6h12M6 18h12" />
+            <!-- Three-dot Menu -->
+            <div class="relative">
+                <button onclick="toggleMenu(this.nextElementSibling)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v.01M12 12v.01M12 18v.01" />
                     </svg>
                 </button>
-                <!-- Dropdown Menu for Edit and Delete -->
-                <div class="relative group">
-                    <div class="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <ul class="text-sm">
-                            <li>
-                                <a href="{% url 'editpost' post.id %}" 
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200">
-                                    Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'delete_post' post.id %}" 
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200">
-                                    Delete
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                
+                <!-- Dropdown Menu -->
+                <ul class="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded-lg shadow-lg hidden">
+                    <li>
+                        <a href="{% url 'editpost' post.id %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Edit</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'delete_post' post.id %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Delete</a>
+                    </li>
+                </ul>
             </div>
         </div>
 
         <!-- Post Title -->
-        <h2 class="text-lg font-semibold text-gray-800 mb-2">{{ post.title }}</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">{{ post.title }}</h2>
 
         <!-- Post Image -->
         {% if post.image %}
-            <img src="{{ post.image }}" alt="Post Image" class="w-full h-48 object-cover rounded-lg mb-3">
+            <img src="{{ post.image }}" alt="Post Image" class="w-full h-64 object-cover rounded-lg mb-4">
         {% endif %}
 
         <!-- Post Content -->
-        <p class="text-sm text-gray-700 mb-3">{{ post.content }}</p>
+        <p class="text-gray-700 mb-4">{{ post.content }}</p>
 
-        <!-- Like and Comment Buttons -->
+        <!-- Like, Comment, and Counts -->
         <div class="flex items-center justify-between">
             <!-- Like Button -->
-            <button class="flex items-center text-blue-600 hover:text-blue-500 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 9l-3 3m0 0l-3-3m3 3V4m6 16H6a2 2 0 01-2-2V6a2 2 0 012-2h4l2-2h4l2 2h4a2 2 0 012 2v12a2 2 0 01-2 2z" />
-                </svg>
-                Like
-            </button>
+            <div class="flex items-center">
+                <form method="POST" action="{% url 'like_unlike_post' post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center text-gray-600 hover:text-blue-600">
+                        {% if post.liked %}
+                            <!-- Unlike Button -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" stroke="none">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="ml-2">Unlike</span>
+                        {% else %}
+                            <!-- Like Button -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                            <span class="ml-2">Like</span>
+                        {% endif %}
+                    </button>
+                </form>
+                <span class="ml-4 text-gray-600">{{ post.likes_count }} Likes</span>
+                
+                
+            </div>
 
             <!-- Comment Button -->
-            <button class="flex items-center text-gray-600 hover:text-gray-500 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button class="flex items-center text-gray-600 hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Comment
