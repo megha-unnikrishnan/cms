@@ -53,7 +53,7 @@ from django.shortcuts import render, redirect
 
     
 def register_view(request):
-    api_url = "http://localhost:8000/api/register/" 
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/api/register/" 
     if request.method == "POST":
         # Get form data from the request
         form_data = {
@@ -87,7 +87,7 @@ def register_view(request):
 
 
 def login_view(request):
-    api_url = "http://localhost:8000/api/token/" 
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/api/token/" 
     if request.method == "POST":
        
         form_data = {
@@ -148,7 +148,7 @@ def user_dashboard_view(request):
 
 
 def createpost(request):
-    api_url = "http://localhost:8000/posts/create/" 
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/create/" 
     if request.method == "POST":
      
         form_data = {
@@ -231,7 +231,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages  # Import messages module
 
 def fetch_posts(request):
-    api_url = "http://localhost:8000/posts/"  # URL to fetch posts
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/"  # URL to fetch posts
     
     # Fetch the access token from session (if available)
     access_token = request.session.get('access_token')
@@ -275,7 +275,7 @@ def fetch_posts(request):
         return render(request, 'usersview/demo.html')
 
 def post_detail(request, id):
-    api_url = f"http://localhost:8000/api/posts/{id}/"  # URL to fetch a single post
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/api/posts/{id}/"  # URL to fetch a single post
     access_token = request.session.get('access_token')
     if not access_token:
         return redirect('login')  
@@ -352,7 +352,7 @@ class PostDeleteView(APIView):
 
 from django.contrib import messages
 def deletepost(request, pk):
-    api_url = f"http://localhost:8000/posts/{pk}/delete/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/{pk}/delete/"
     access_token = request.session.get('access_token')
     if not access_token:
         return redirect('login')
@@ -421,7 +421,7 @@ class LogoutView(APIView):
 
 from django.http import JsonResponse
 def post_edit_delete(request, post_id):
-    api_url = f"http://localhost:8000/editdeleteapi/{post_id}/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/editdeleteapi/{post_id}/"
     access_token = request.session.get('access_token')
     
     if not access_token:
@@ -486,7 +486,7 @@ import requests
 
 
 def update_post(request, pk):
-    api_url = f"http://localhost:8000/posts/{pk}/update/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/{pk}/update/"
     access_token = request.session.get('access_token')
 
     if not access_token:
@@ -519,7 +519,7 @@ def update_post(request, pk):
 
     # GET request: Fetch the existing post data
     try:
-        response = requests.get(f"http://localhost:8000/api/posts/{pk}/", headers=headers)
+        response = requests.get(f"https://cmsblogpos-50c60a279bb0.herokuapp.com/api/posts/{pk}/", headers=headers)
         if response.status_code == 200:
             post_data = response.json()
             return render(request, 'usersview/post_edit.html', {"form_data": post_data, "post_id": pk})
@@ -532,7 +532,7 @@ def update_post(request, pk):
 
 
 def comments(request, pk):
-    api_url = f"http://localhost:8000/posts/{pk}/comments/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/{pk}/comments/"
     access_token = request.session.get('access_token')
 
     if not access_token:
@@ -604,7 +604,7 @@ def dashboard(request):
 
 
 def like_post(request, pk):
-    api_url = f"http://localhost:8000/posts/{pk}/likes/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/{pk}/likes/"
     access_token = request.session.get('access_token')
 
     if not access_token:
@@ -613,7 +613,7 @@ def like_post(request, pk):
     headers = {'Authorization': f'Bearer {access_token}'}
 
     # Fetch post details
-    post_details_url = f"http://localhost:8000/api/posts/{pk}/"
+    post_details_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/api/posts/{pk}/"
     response = requests.get(post_details_url, headers=headers)
     if response.status_code != 200:
         return JsonResponse({"error": "Unable to fetch post details"}, status=response.status_code)
