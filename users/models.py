@@ -33,7 +33,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
     username = None
-    full_name = models.CharField(max_length=100, blank=True,null=True)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(_('email address'), unique=True)
     phone = models.CharField(max_length=15, unique=True) 
     bio = models.TextField(blank=True, null=True)
