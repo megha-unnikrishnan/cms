@@ -21,7 +21,7 @@ class RegularUserListView(APIView):
 
 
 def regular_users_view(request):
-    api_url = "http://localhost:8000/admin_view/regular-users/"
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/admin_view/regular-users/"
     access_token = request.session.get("access_token")
     if not access_token:
         return redirect("login_view") 
@@ -83,7 +83,7 @@ class EditUserView(APIView):
     
 
 def edit_user(request, id):
-    api_url = f"http://localhost:8000/admin_view/edit-user/{id}/"  
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/admin_view/edit-user/{id}/"  
     access_token = request.session.get('access_token')
 
     if request.method == 'GET':
@@ -140,7 +140,7 @@ def admin_toggle_active_status_view(request, user_id):
     """
     View to toggle the active status of a user and render the user list.
     """
-    api_url = f"http://localhost:8000/admin_view/toggle-active-status/{user_id}/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/admin_view/toggle-active-status/{user_id}/"
     access_token = request.session.get("access_token")  # Assuming authentication tokens are stored in the session
 
     if not access_token:
@@ -172,7 +172,7 @@ def admin_toggle_active_status_view(request, user_id):
 
 
 def fetch_posts_users_admin(request):
-    api_url = "http://localhost:8000/posts/"  # URL to fetch posts
+    api_url = "https://cmsblogpos-50c60a279bb0.herokuapp.com/posts/"  # URL to fetch posts
     
     # Fetch the access token from session (if available)
     access_token = request.session.get('access_token')
@@ -263,7 +263,7 @@ class EditPostUserView(APIView):
 from django.contrib import messages
 
 def update_posts_users(request, pk):
-    api_url = f"http://localhost:8000/admin_view/posts-users/{pk}/update/"  # API endpoint for editing the post
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/admin_view/posts-users/{pk}/update/"  # API endpoint for editing the post
 
     access_token = request.session.get('access_token')
     if not access_token:
@@ -343,7 +343,7 @@ class PostDeleteUserView(APIView):
         return Response({"message": "Post deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 def deletepost(request, pk):
-    api_url = f"http://localhost:8000/admin_view/deleteuser/{pk}/"
+    api_url = f"https://cmsblogpos-50c60a279bb0.herokuapp.com/admin_view/deleteuser/{pk}/"
     access_token = request.session.get('access_token')
     if not access_token:
         return redirect('login') 
